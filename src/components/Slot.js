@@ -17,16 +17,6 @@ const SlotContainer = styled.div`
 `;
 
 export default class Slot extends React.Component {
-  // constructor() {
-  //   super()
-  //   let dimensionUrl = '';
-  // }
-  // componentDidMount() {
-  //   fetch("https://picsum.photos/200")
-  //   .then(res => {
-  //     this.dimensionUrl = res.url;
-  //   })
-  // }
   render() {
     return(
       <SlotContainer

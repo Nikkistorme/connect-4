@@ -4,8 +4,8 @@ import styled from 'styled-components';
 const SlotContainer = styled.div`
   align-self: center;
   justify-self: center;
-  width: 90px;
-  height: 90px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   background-color: white;
   &.player-one {

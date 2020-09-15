@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Raleway';
+  src: local('Raleway'), url(./fonts/Raleway-VariableFont_wght.ttf) format('truetype')
+}
+
 html {
   box-sizing: border-box;
   font-size: 10px;
@@ -7,6 +12,20 @@ html {
   box-sizing: inherit;
 }
 
+body {
+  font-family: Raleway;
+}
+
+h1 {
+  font-size: 5rem;
+}
+
 .App {
   text-align: center;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

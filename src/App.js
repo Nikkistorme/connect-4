@@ -1,28 +1,33 @@
 import React from 'react';
-import styled from 'styled-components';
+import { Provider } from 'react-redux';
+import { applyMiddleware, createStore } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import logger from 'redux-logger';
 
 import './App.css';
-import Board from './components/Board';
 
-const HeaderContainer = styled.header`
-  height: 100px;
-`;
+import rootReducer from './rootReducer';
+import Header from './interface/Header';
+import Board from './board/Board';
 
-const MainContainer = styled.main`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+const middleware = [logger];
+
+const store = createStore(
+  rootReducer,
+  {},
+  composeWithDevTools(applyMiddleware(...middleware))
+);
 
 function App() {
   return (
-    <div className="App">
-      <HeaderContainer>
-      </HeaderContainer>
-      <MainContainer>
-        <Board />
-      </MainContainer>
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        <Header />
+        <main>
+          <Board />
+        </main>
+      </div>
+    </Provider>
   );
 }
 

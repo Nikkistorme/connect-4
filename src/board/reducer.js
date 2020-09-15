@@ -1,5 +1,7 @@
 const initialState = {
-  board: []
+  board: [],
+  turnOne: true,
+  winner: 0
 }
 
 export default function (state = initialState, action) {
@@ -10,6 +12,16 @@ export default function (state = initialState, action) {
         ...state,
         board: data
       };
+    case 'CHANGE_TURN':
+      return {
+        ...state,
+        turnOne: !state.turnOne
+      }
+    case 'CHANGE_WINNER':
+      return {
+        ...state,
+        winner: data
+      }
     default:
       return state;
   }

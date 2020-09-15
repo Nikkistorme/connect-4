@@ -9,6 +9,7 @@ import './App.css';
 import rootReducer from './rootReducer';
 import Header from './interface/Header';
 import Board from './board/Board';
+import Dashboard from './interface/Dashboard'
 
 const middleware = [logger];
 
@@ -25,6 +26,7 @@ function App() {
         <Header />
         <main>
           <Board />
+          <Dashboard />
         </main>
       </div>
     </Provider>

@@ -1,5 +1,5 @@
 const initialState = {
-  gameActive: true
+  gameActive: false
 }
 
 export default function (state = initialState, action) {

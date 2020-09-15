@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './fonts/Raleway-VariableFont_wght.ttf';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';

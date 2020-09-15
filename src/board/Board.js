@@ -1,12 +1,17 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
+
+import { setBoard } from './actions';
+import { toggleGame } from '../session/actions'
 
 import Slot from './Slot'
 
 const ConnectFourBoard = styled.div`
   display: flex;
-  height: 700px;
-  width: 1000px;
+  height: 525px;
+  width: 750px;
   border-radius: 20px;
   background-color: #031f9c;
 `;
@@ -18,12 +23,9 @@ const Column = styled.div`
   justify-content: space-evenly;
 `;
 
-export default class Board extends React.Component {
+class Board extends React.Component {
   state = {
-    boardData: [],
     playerOnesTurn: true,
-    gameActive: true,
-    winner: 0
   }
   // start a new game on page load
   componentDidMount() {
@@ -31,7 +33,7 @@ export default class Board extends React.Component {
   }
   // creates a fresh board
   newGame = () => {
-    let boardData = [];
+    let board = [];
     for (let x = 0; x < 7; x++) {
       let row = [];
       for (let y = 0; y < 6; y++) {
@@ -41,35 +43,41 @@ export default class Board extends React.Component {
         }
         row.push(slot)
       }
-      boardData.push(row);
+      board.push(row);
     }
-    this.setState({ boardData })
+    this.props.setBoard(board);
   }
   // takes in a column index and possible drops a token
   dropToken = (targetColumnIndex) => {
-    let landingSlot = {}
-    let boardData = [...this.state.boardData];
-    let playerOnesTurn = this.state.playerOnesTurn ? true : false;
-    for (let x = 0; x < boardData[targetColumnIndex].length; x++) {
-      // if it's unfilled and the final slot
-      if (boardData[targetColumnIndex][x].filled === 0 && !boardData[targetColumnIndex][x+1]) {
-        boardData[targetColumnIndex][x].filled = this.state.playerOnesTurn ? 1 : 2;
-        landingSlot = boardData[targetColumnIndex][x];
-        break;
-      // if it's unfilled and not the final slot
-      } else if (boardData[targetColumnIndex][x].filled === 0 && boardData[targetColumnIndex][x+1].filled !== 0) {
-        boardData[targetColumnIndex][x].filled = this.state.playerOnesTurn ? 1 : 2;
-        landingSlot = boardData[targetColumnIndex][x];
-        break;
-      }
-    }
-    // check if the player just won the game
-    if (this.checkWin(landingSlot)) {
-      console.log(`player ${landingSlot.filled} won!`)
-      this.setState({ boardData: boardData, winner: landingSlot.filled })
+    if (!this.props.gameActive) {
+      return false;
     } else {
-      playerOnesTurn = !playerOnesTurn;
-      this.setState({ boardData: boardData, playerOnesTurn: playerOnesTurn })
+      let landingSlot = {}
+      let board = [...this.props.board];
+      let playerOnesTurn = this.state.playerOnesTurn ? true : false;
+      for (let x = 0; x < board[targetColumnIndex].length; x++) {
+        // if it's unfilled and the final slot
+        if (board[targetColumnIndex][x].filled === 0 && !board[targetColumnIndex][x+1]) {
+          board[targetColumnIndex][x].filled = this.state.playerOnesTurn ? 1 : 2;
+          landingSlot = board[targetColumnIndex][x];
+          break;
+        // if it's unfilled and not the final slot
+        } else if (board[targetColumnIndex][x].filled === 0 && board[targetColumnIndex][x+1].filled !== 0) {
+          board[targetColumnIndex][x].filled = this.state.playerOnesTurn ? 1 : 2;
+          landingSlot = board[targetColumnIndex][x];
+          break;
+        }
+      }
+      // check if the player just won the game
+      if (this.checkWin(landingSlot)) {
+        console.log(`player ${landingSlot.filled} won!`)
+        this.props.setBoard(board);
+        this.props.toggleGame();
+      } else {
+        playerOnesTurn = !playerOnesTurn;
+        this.setState({ playerOnesTurn })
+        this.props.setBoard(board);
+      }
     }
   }
   // take in the freshly placed slot, run through win checkers, and return boolean
@@ -132,7 +140,7 @@ export default class Board extends React.Component {
   // if the passed in slot and the adjacentSlot are filled by the same player, add to the counter
   // return the counter
   findSlotsInLine = (direction, newSlot, range) => {
-    const board = [...this.state.boardData]
+    const board = [...this.props.board]
     let counter = 0;
     for (let x = 0; x < range; x++) {
       let adjacentSlot = {};
@@ -173,7 +181,7 @@ export default class Board extends React.Component {
   render() {
     return (
       <ConnectFourBoard>
-        {this.state.boardData.map((column, index) =>
+        {this.props.board.map((column, index) =>
           <Column key={index} onClick={() => this.dropToken(index)}>
             {column.map(key =>
               <Slot
@@ -188,3 +196,15 @@ export default class Board extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state) => ({
+  gameActive: state.session.gameActive,
+  board: state.board.board
+});
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  toggleGame,
+  setBoard
+}, dispatch)
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board);

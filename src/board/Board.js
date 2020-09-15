@@ -1,32 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import styled from 'styled-components';
 
-import { setBoard } from './actions';
+import { styled } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+
+import { setBoard, changeTurn, changeWinner } from './actions';
 import { toggleGame } from '../session/actions'
 
 import Slot from './Slot'
 
-const ConnectFourBoard = styled.div`
-  display: flex;
-  height: 525px;
-  width: 750px;
-  border-radius: 20px;
-  background-color: #031f9c;
-`;
+const ConnectFourBoard = styled(Box)({
+  display: 'flex',
+  height: 525,
+  width: 750,
+  borderRadius: 20,
+  backgroundColor: '#031f9c'
+});
 
-const Column = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-`;
+const Column = styled(Box)({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-evenly',
+  alignItems: 'center'
+});
 
 class Board extends React.Component {
-  state = {
-    playerOnesTurn: true,
-  }
   // start a new game on page load
   componentDidMount() {
     this.newGame();
@@ -49,21 +49,21 @@ class Board extends React.Component {
   }
   // takes in a column index and possible drops a token
   dropToken = (targetColumnIndex) => {
-    if (!this.props.gameActive) {
+    if (!this.props.gameActive || this.props.winner > 0) {
       return false;
     } else {
       let landingSlot = {}
       let board = [...this.props.board];
-      let playerOnesTurn = this.state.playerOnesTurn ? true : false;
+      let turnOne = this.props.turnOne ? true : false;
       for (let x = 0; x < board[targetColumnIndex].length; x++) {
         // if it's unfilled and the final slot
         if (board[targetColumnIndex][x].filled === 0 && !board[targetColumnIndex][x+1]) {
-          board[targetColumnIndex][x].filled = this.state.playerOnesTurn ? 1 : 2;
+          board[targetColumnIndex][x].filled = turnOne ? 1 : 2;
           landingSlot = board[targetColumnIndex][x];
           break;
         // if it's unfilled and not the final slot
         } else if (board[targetColumnIndex][x].filled === 0 && board[targetColumnIndex][x+1].filled !== 0) {
-          board[targetColumnIndex][x].filled = this.state.playerOnesTurn ? 1 : 2;
+          board[targetColumnIndex][x].filled = turnOne ? 1 : 2;
           landingSlot = board[targetColumnIndex][x];
           break;
         }
@@ -72,10 +72,9 @@ class Board extends React.Component {
       if (this.checkWin(landingSlot)) {
         console.log(`player ${landingSlot.filled} won!`)
         this.props.setBoard(board);
-        this.props.toggleGame();
+        this.props.changeWinner(landingSlot.filled);
       } else {
-        playerOnesTurn = !playerOnesTurn;
-        this.setState({ playerOnesTurn })
+        this.props.changeTurn();
         this.props.setBoard(board);
       }
     }
@@ -198,13 +197,17 @@ class Board extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  gameActive: state.session.gameActive,
-  board: state.board.board
+  winner: state.game.winner,
+  board: state.game.board,
+  turnOne: state.game.turnOne,
+  gameActive: state.session.gameActive
 });
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   toggleGame,
-  setBoard
+  setBoard,
+  changeTurn,
+  changeWinner
 }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board);

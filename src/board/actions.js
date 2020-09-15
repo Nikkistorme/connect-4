@@ -5,9 +5,15 @@ export function setBoard(data) {
   }
 }
 
-export function changeTurn(data) {
+export function changeTurn() {
   return {
-    type: 'CHANGE_TURN',
+    type: 'CHANGE_TURN'
+  }
+}
+
+export function changeWinner(data) {
+  return {
+    type: 'CHANGE_WINNER',
     data
   }
 }

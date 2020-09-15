@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 
-import session from './dash/reducer';
+import session from './session/reducer';
 import board from './board/reducer';
 
 const rootReducer = combineReducers({
